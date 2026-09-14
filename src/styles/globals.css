@@ -17,11 +17,18 @@ body {
 }
 
 @media print {
+  html,
+  body {
+    height: auto !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+  }
+
   body *,
   *::before,
   *::after {
     -webkit-print-color-adjust: exact !important; /* Chrome, Safari, Edge */
-    print-color-adjust: exact !important; /*Firefox*/
+    print-color-adjust: exact !important; /* Firefox */
   }
 }
 

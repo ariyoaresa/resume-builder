@@ -26,6 +26,7 @@ import { useBasicDetails } from '@/stores/basic';
 import { useEducations } from '@/stores/education';
 import { useExperiences } from '@/stores/experience';
 import { useVoluteeringStore } from '@/stores/volunteering';
+import { formatExportFileName } from '@/helpers/utils';
 import { Menu, MenuItem } from '@mui/material';
 
 const TOTAL_TEMPLATES_AVAILABLE = Object.keys(AVAILABLE_TEMPLATES).length;
@@ -66,7 +67,7 @@ const NavBarLayout = () => {
       },
       activities: useActivity.getState().activities,
     };
-    const fileName = updatedResumeJson.basics.name + '_' + new Date().toLocaleString();
+    const fileName = formatExportFileName(updatedResumeJson.basics.name);
     const exportType = exportFromJSON.types.json;
     exportFromJSON({
       data: updatedResumeJson,

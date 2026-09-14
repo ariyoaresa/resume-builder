@@ -1,14 +1,24 @@
-import { useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { StyledButton } from '../atoms';
-import { MenuItem, Menu } from '@mui/material';
+import { MenuItem, Menu, CircularProgress } from '@mui/material';
 import { useResumeStore } from '@/stores/useResumeStore';
 import { generateDocx } from '@/helpers/utils/generateDocx';
+import { generatePdf } from '@/helpers/utils/generatePdf';
 import React from 'react';
 
 export const PrintResume: React.FC<{ isMenuButton?: boolean }> = ({ isMenuButton }) => {
   const resumeData = useResumeStore();
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
+  const [isExportingDocx, setIsExportingDocx] = useState(false);
+  const isExporting = isExportingPdf || isExportingDocx;
+  const open = Boolean(anchorEl) && !isExporting;
+
+  useEffect(() => {
+    if (isExporting) {
+      setAnchorEl(null);
+    }
+  }, [isExporting]);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -17,33 +27,41 @@ export const PrintResume: React.FC<{ isMenuButton?: boolean }> = ({ isMenuButton
     setAnchorEl(null);
   };
 
-  useEffect(() => {
-    const handleBeforePrint = () => {
-      globalThis.document.title = `Resume_Builder_${Date.now()}`;
-    };
-    const handleAfterPrint = () => {
-      globalThis.document.title = 'Single Page Resume Builder';
-    };
-
-    globalThis?.addEventListener('beforeprint', handleBeforePrint);
-    globalThis?.addEventListener('afterprint', handleAfterPrint);
-
-    return () => {
-      globalThis?.removeEventListener('beforeprint', handleBeforePrint);
-      globalThis?.removeEventListener('afterprint', handleAfterPrint);
-    };
-  }, []);
+  const downloadPdf = useCallback(async () => {
+    handleClose();
+    setIsExportingPdf(true);
+    try {
+      await generatePdf(resumeData.basics.name);
+    } catch (error) {
+      console.error('Direct PDF export error:', error);
+      alert('Unable to export PDF directly. Please try again.');
+    } finally {
+      setIsExportingPdf(false);
+    }
+  }, [resumeData.basics.name]);
 
   const downloadDocx = useCallback(async () => {
-    await generateDocx(resumeData);
     handleClose();
+    setIsExportingDocx(true);
+    try {
+      await generateDocx(resumeData);
+    } catch (error) {
+      console.error('Direct DOCX export error:', error);
+      alert('Unable to export DOCX directly. Please try again.');
+    } finally {
+      setIsExportingDocx(false);
+    }
   }, [resumeData]);
 
   if (isMenuButton) {
     return (
       <>
-        <MenuItem onClick={globalThis?.print}>Download as PDF</MenuItem>
-        <MenuItem onClick={downloadDocx}>Download as DOCX</MenuItem>
+        <MenuItem onClick={downloadPdf} disabled={isExporting}>
+          {isExportingPdf ? 'Generating PDF...' : 'Download as PDF'}
+        </MenuItem>
+        <MenuItem onClick={downloadDocx} disabled={isExporting}>
+          {isExportingDocx ? 'Generating DOCX...' : 'Download as DOCX'}
+        </MenuItem>
       </>
     );
   }
@@ -57,8 +75,16 @@ export const PrintResume: React.FC<{ isMenuButton?: boolean }> = ({ isMenuButton
         aria-expanded={open ? 'true' : undefined}
         onClick={handleClick}
         variant="outlined"
+        disabled={isExporting}
       >
-        Download
+        {isExporting ? (
+          <span className="flex items-center gap-2">
+            <CircularProgress size={16} color="inherit" />
+            <span>Exporting...</span>
+          </span>
+        ) : (
+          'Download'
+        )}
       </StyledButton>
       <Menu
         id="download-menu"
@@ -69,8 +95,12 @@ export const PrintResume: React.FC<{ isMenuButton?: boolean }> = ({ isMenuButton
           'aria-labelledby': 'download-button',
         }}
       >
-        <MenuItem onClick={globalThis?.print}>Download as PDF</MenuItem>
-        <MenuItem onClick={downloadDocx}>Download as DOCX</MenuItem>
+        <MenuItem onClick={downloadPdf} disabled={isExporting}>
+          {isExportingPdf ? 'Generating PDF...' : 'Download as PDF'}
+        </MenuItem>
+        <MenuItem onClick={downloadDocx} disabled={isExporting}>
+          {isExportingDocx ? 'Generating DOCX...' : 'Download as DOCX'}
+        </MenuItem>
       </Menu>
     </div>
   );

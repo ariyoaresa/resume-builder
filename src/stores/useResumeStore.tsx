@@ -33,7 +33,7 @@ export const useResumeStore = () => {
       practices: usePractices((state) => state.values),
       tools: useTools((state) => state.values),
     },
-    activities: useActivity((state) => state.get()),
+    activities: useActivity((state) => state.activities),
   };
 };
 

@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { IActivity } from './activity.interface';
 export interface ILocation {
   address: string;
   postalCode: string;
@@ -98,4 +99,5 @@ export interface IResume {
   education: IEducation[];
   awards?: IAwards[];
   volunteer?: IVolunteer[];
+  activities?: IActivity;
 }

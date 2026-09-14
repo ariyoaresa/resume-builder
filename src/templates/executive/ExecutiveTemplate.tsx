@@ -96,11 +96,11 @@ export default function ExecutiveTemplate() {
             </section>
           </SectionValidator>
 
-          <SectionValidator value={resumeData.skills.technologies}>
+          <SectionValidator value={resumeData.skills?.technologies}>
             <section>
               <SectionHeader title="Skills" />
               <div className="flex flex-wrap gap-2">
-                {resumeData.skills.technologies.map((skill: IItem, index: number) => (
+                {(resumeData.skills?.technologies || []).map((skill: IItem, index: number) => (
                   <span
                     key={index}
                     className="bg-slate-800 text-white px-2 py-1 text-xs rounded uppercase font-bold tracking-tight"
@@ -112,11 +112,11 @@ export default function ExecutiveTemplate() {
             </section>
           </SectionValidator>
 
-          <SectionValidator value={resumeData.skills.languages}>
+          <SectionValidator value={resumeData.skills?.languages}>
             <section>
               <SectionHeader title="Languages" />
               <ul className="text-sm">
-                {resumeData.skills.languages.map((lang: IItem, index: number) => (
+                {(resumeData.skills?.languages || []).map((lang: IItem, index: number) => (
                   <li key={index} className="flex justify-between mb-1">
                     <span>{lang.name}</span>
                     <span className="text-xs italic text-slate-500">Level {lang.level}/10</span>

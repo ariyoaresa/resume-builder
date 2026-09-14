@@ -44,9 +44,16 @@ const RightSection = styled.div`
 
 export default function ProfessionalTemplate() {
   const resumeData = useResumeContext();
-  const skills = resumeData.skills;
-  const involvements = resumeData.activities.involvements;
-  const achievements = resumeData.activities.achievements;
+  const skills = resumeData.skills || {};
+  const languages = skills.languages || [];
+  const frameworks = skills.frameworks || [];
+  const technologies = skills.technologies || [];
+  const libraries = skills.libraries || [];
+  const databases = skills.databases || [];
+  const practices = skills.practices || [];
+  const tools = skills.tools || [];
+  const involvements = resumeData.activities?.involvements || '';
+  const achievements = resumeData.activities?.achievements || '';
 
   return (
     <ResumeContainer>
@@ -91,25 +98,25 @@ export default function ProfessionalTemplate() {
           </Section>
         </SectionValidator>
 
-        <SectionValidator value={skills.languages.concat(skills.frameworks)}>
+        <SectionValidator value={languages.concat(frameworks)}>
           <Section title="Technical expertise">
-            <RatedSkills items={skills.languages.concat(skills.frameworks)} />
+            <RatedSkills items={languages.concat(frameworks)} />
           </Section>
         </SectionValidator>
 
-        <SectionValidator value={skills.technologies.concat(skills.libraries, skills.databases)}>
+        <SectionValidator value={technologies.concat(libraries, databases)}>
           <Section title="Skills / Exposure">
-            <UnratedSkills items={skills.technologies.concat(skills.libraries, skills.databases)} />
+            <UnratedSkills items={technologies.concat(libraries, databases)} />
           </Section>
         </SectionValidator>
-        <SectionValidator value={skills.practices}>
+        <SectionValidator value={practices}>
           <Section title="Methodology/Approach">
-            <UnratedSkills items={skills.practices} />
+            <UnratedSkills items={practices} />
           </Section>
         </SectionValidator>
-        <SectionValidator value={skills.tools}>
+        <SectionValidator value={tools}>
           <Section title="Tools">
-            <UnratedSkills items={skills.tools} />
+            <UnratedSkills items={tools} />
           </Section>
         </SectionValidator>
         <SectionValidator value={resumeData.education}>
